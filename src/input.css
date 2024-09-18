@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .form-input {
+    @apply rounded-sm border border-gray-200 p-2 mb-3;
+  }
+
+  .form-button {
+    @apply hover:bg-[#4b556d] hover:text-white rounded-md cursor-pointer border border-gray-200 p-2 mt-3;
+  }
+
+  .form-button-secondary {
+    @apply bg-[#4b556d] text-white hover:text-[#4b556d] hover:bg-white rounded-md cursor-pointer border border-gray-200 p-2 mt-3;
+  }
+
+  .nav-link {
+    @apply text-xl leading-7 h-12 flex items-center justify-evenly border-b border-[#e4dcdc] hover:bg-[#e3e3e6];
+  }
+}
