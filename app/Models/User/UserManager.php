@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Models\Database;
+use Exception;
 
 class UserManager
 {
@@ -38,11 +39,8 @@ class UserManager
 
     public function getUsers()
     {
-        $statement = $this->connection->prepare("SELECT * FROM users");
-
-        if ($statement === false) {
-            return "sql-error";
-        } else {
+        try {
+            $statement = $this->connection->prepare("SELECT * FROM users");
             $statement->execute();
             $results = $statement->get_result();
 
@@ -57,77 +55,85 @@ class UserManager
             $statement->close();
 
             return $users;
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "sql-error", "message" => $e->getMessage()];
+        }
+    }
 
+    public function getUser($name)
+    {
+        try {
+            $statement = $this->connection->prepare("SELECT * FROM users WHERE name=?");
+            $statement->bind_param("s", $name);
+            $statement->execute();
 
+            $result = $statement->get_result();
+            $obj = $result->fetch_object();
+            $statement->close();
+
+            return ['result' => $result, 'object' => $obj];
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "sql-error", "message" => $e->getMessage()];
         }
     }
 
     public function nameCheck($name)
     {
-        $statement = $this->connection->prepare("SELECT * FROM users WHERE name=?");
+        try {
+            $statement = $this->connection->prepare("SELECT * FROM users WHERE name=?");
+            $statement->bind_param("s", $name);
+            $statement->execute();
+            $result = $statement->get_result();
+            $statement->close();
 
-        if ($statement === false) {
-            return "sql-error";
+            return $result->num_rows > 0 ? true : false;
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "error-page", "message" => $e->getMessage()];
         }
-
-        $statement->bind_param("s", $name);
-        $statement->execute();
-        $result = $statement->get_result();
-        $statement->close();
-
-        return $result->num_rows > 0 ? "name-error" : false;
-
     }
 
     public function create($name, $password)
     {
         $nameCheck = $this->nameCheck($name);
 
-        if ($nameCheck !== false) {
-            return $nameCheck;
+        if ($nameCheck === true) {
+            return ["type" => "signup-error", "message" => "Username taken"];
         }
 
         if (empty($name)) {
-            return "name-error-signup";
+            return ["type" => "signup-error", "message" => "Enter a username"];
         }
 
         if (empty($password)) {
-            return "password-error-signup";
+            return ["type" => "signup-error", "message" => "Enter a password"];
         }
 
-        $hashPassword = password_hash($password, PASSWORD_DEFAULT);
-        $statement = $this->connection->prepare(
-            "INSERT INTO users VALUES (NULL, ?, ?, 0)"
-        );
-
-        if ($statement === false) {
-            return "sql-error";
+        try {
+            $hashPassword = password_hash($password, PASSWORD_DEFAULT);
+            $statement = $this->connection->prepare(
+                "INSERT INTO users VALUES (NULL, ?, ?, 0)"
+            );
+            $statement->bind_param("ss", $name, $hashPassword);
+            $statement->execute();
+            $statement->close();
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "error-page", "message" => $e->getMessage()];
         }
-
-        $statement->bind_param("ss", $name, $hashPassword);
-        $statement->execute();
-        $statement->close();
-        return true;
     }
 
     public function signin($name, $password)
     {
-        $statement = $this->connection->prepare("SELECT * FROM users WHERE name=?");
+        $user = $this->getUser($name);
+        $obj = $user['object'];
 
-        if ($statement === false) {
-            return "sql-error";
-        }
-
-        $statement->bind_param("s", $name);
-        $statement->execute();
-        $result = $statement->get_result();
-
-        $obj = $result->fetch_object();
-
-        if ($result->num_rows === 0) {
-            return "name-error-login";
+        if ($user['result']->num_rows === 0) {
+            return ["type" => "login-error", "message" => "Username invalid"];
         } else if (!password_verify($password, $obj->password)) {
-            return "password-error-login";
+            return ["type" => "login-error", "message" => "Password invalid"];
         }
 
         session_start();
@@ -136,10 +142,6 @@ class UserManager
         $_SESSION['name'] = $name;
         $_SESSION['admin'] = $obj->admin;
         $_SESSION['user_id'] = $obj->id;
-
-        $statement->close();
-
-        return true;
     }
 
     public function logout()

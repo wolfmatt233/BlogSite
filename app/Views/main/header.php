@@ -7,11 +7,57 @@
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/styles.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>/css/output.css">
     <link rel="shortcut icon" href="<?= BASE_URL ?>/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Blogs - <?= $title ?></title>
 </head>
 
 <body class="bg-[#f3f4f7] text-[#4b556d]">
+    <!-- Drawer and Modal -->
+    <div id="drawer" class="close-menu absolute top-0 h-full bg-[#f3f4f7] text-center flex flex-col z-10">
+        <div class="nav-link bg-[#323c48] text-white select-none hover:bg-[#323c48]">Menu</div>
+        <a href="/" class="nav-link">Home</a>
+        <?= isset($_SESSION['admin']) && $_SESSION['admin'] === TRUE ?
+            "<a href='/users' class='nav-link'>Users</a>" : "" ?>
+        <?php
+        if (isset($_SESSION['loggedin'])): ?>
+            <a href='/posts?page=1' class='nav-link'>Browse Posts</a>
+            <a href="/posts/personal" class="nav-link">Your Posts</a>
+            <a href="/posts/create" class="nav-link">Create a Post</a>
+            <a href='/users/logout' class="nav-link">Log Out</a>
+        <?php else: ?>
+            <a href='/users/login' class="nav-link">Log In</a>
+        <?php endif ?>
+    </div>
+
+    <div onclick="closeModal(this, event)" id="modal"
+        class="z-[100] absolute top-0 left-0 w-full h-full bg-[#00000012] hidden">
+    </div>
+
+    <!-- Nav, Page title, content div -->
+
     <nav class="bg-[#323c48] shadow-[0px_3px_5px_#9f9898] px-3">
+        <!-- <div class="flex justify-between m-auto max-w-[900px] w-full h-12 relative">
+            <div class="flex items-center justify-between w-2/3">
+                <a href="/home" class="text-white text-lg h-full flex items-center">Blog Website</a>
+                <?= isset($_SESSION['admin']) && $_SESSION['admin'] === TRUE ?
+                    "<a href='/users' class='nav-link-2'>Users</a>" : "" ?>
+                <?php
+                if (isset($_SESSION['loggedin'])): ?>
+                    <a href='/posts?page=1' class="nav-link-2">Browse</a>
+                    <a href="/posts/personal" class="nav-link-2">Your
+                        Posts</a>
+                    <a href="/posts/create" class="nav-link-2">Create a Post</a>
+                <?php endif ?>
+            </div>
+            <div>
+                <?php if (isset($_SESSION['loggedin'])): ?>
+                    <a href='/users/logout' class="nav-link-2">Log Out</a>
+
+                <?php endif ?>
+            </div>
+        </div> -->
         <div class="flex items-center justify-evenly m-auto max-w-[900px] w-full h-12 relative">
             <div>
                 <p class="text-white text-lg">Blog Website</p>
@@ -36,26 +82,6 @@
             <p id='nav-message' class="text-center text-green-600 cursor-pointer hover:text-red-600">&#215; <?= $message ?>
             </p>
         <?php endif ?>
-    </div>
-
-    <div id="drawer" class="close-menu absolute top-0 h-full bg-[#f3f4f7] text-center flex flex-col z-10">
-        <div class="nav-link bg-[#323c48] text-white select-none hover:bg-[#323c48]">Menu</div>
-        <a href="/" class="nav-link">Home</a>
-        <?= isset($_SESSION['admin']) && $_SESSION['admin'] === TRUE ?
-            "<a href='/users' class='nav-link'>Users</a>" : "" ?>
-        <?php
-        if (isset($_SESSION['loggedin'])): ?>
-            <a href='/posts?page=1' class='nav-link'>Browse Posts</a>
-            <a href="/posts/personal" class="nav-link">Your Posts</a>
-            <a href="/posts/create" class="nav-link">Create a Post</a>
-            <a href='/users/logout' class="nav-link">Log Out</a>
-        <?php else: ?>
-            <a href='/users/login' class="nav-link">Log In</a>
-        <?php endif ?>
-    </div>
-
-    <div onclick="closeModal(this, event)" id="modal"
-        class="z-[100] absolute top-0 left-0 w-full h-full bg-[#00000012] hidden">
     </div>
 
     <div

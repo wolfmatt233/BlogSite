@@ -12,8 +12,7 @@
         <input type="submit" value="Log In"
             class="hover:bg-[#4b556d] hover:text-white rounded-md cursor-pointer border border-gray-200 p-2 mt-3">
         <p class="text-center text-red-500 mt-2">
-            <?= isset($_GET['e']) && $_GET['e'] == 'password' ? "Invalid Password" : "" ?>
-            <?= isset($_GET['e']) && $_GET['e'] == 'name' ? "Invalid Username" : "" ?>
+            <?= isset($_GET['e']) ? $_GET['e'] : "" ?>
         </p>
         <a href="/users/signup" class="text-blue-400 text-center hover:underline mt-2">No account? Sign up here!</a>
     </form>

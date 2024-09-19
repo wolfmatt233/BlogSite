@@ -8,8 +8,7 @@
         <input type="password" name="password" placeholder="Password" class="form-input">
         <input type="submit" value="Sign Up" class="form-button">
         <p class="text-center text-red-500 mt-2">
-            <?= isset($_GET['e']) && $_GET['e'] == 'password' ? "Invalid Password" : "" ?>
-            <?= isset($_GET['e']) && $_GET['e'] == 'name' ? "Invalid Username" : "" ?>
+            <?= isset($_GET['e'])? $_GET['e'] : "" ?>
         </p>
         <a href="/users/login" class="text-blue-400 text-center hover:underline mt-3">
             Already have an account? Log in here!

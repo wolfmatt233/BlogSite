@@ -18,4 +18,8 @@
   .nav-link {
     @apply text-xl leading-7 h-12 flex items-center justify-evenly border-b border-[#e4dcdc] hover:bg-[#e3e3e6];
   }
+
+  .nav-link-2 {
+    @apply flex items-center h-full text-white border-b-2 border-transparent hover:border-white;
+  }
 }

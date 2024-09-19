@@ -11,10 +11,7 @@ class PostController extends Controller
 
     public function __construct()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
+        session_status() === PHP_SESSION_NONE ? session_start() : "";
         $this->post = PostManager::getInstance();
     }
 
@@ -39,6 +36,7 @@ class PostController extends Controller
     {
         $posts = $this->post->getPersonalPosts();
         $error = $this->errorHandles($posts);
+
         if ($error === false) {
             $totalPages = ceil(count($posts) / 10);
             $posts = $this->paginate($posts);
@@ -56,9 +54,10 @@ class PostController extends Controller
         $post = $this->post->getPost($id);
         $comments = $this->post->getComments($id);
 
+        var_dump($post);
+
         $error = $this->errorHandles($post);
         $error = $this->errorHandles($comments);
-
 
         if ($error === false) {
             $totalPages = ceil(count($comments) / 10);
@@ -96,8 +95,11 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = $this->post->getPost($id);
+        $error = $this->errorHandles($post);
 
-        $this->render('posts', 'edit', ['title' => 'Edit Post', 'post' => $post]);
+        if ($error === false) {
+            $this->render('posts', 'edit', ['title' => 'Edit Post', 'post' => $post]);
+        }
     }
 
     public function update($id)

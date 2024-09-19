@@ -27,7 +27,7 @@
 
             <?php if ($_SESSION['user_id'] == $post->getUserId() && $_SESSION['loggedin'] == TRUE): ?>
                 <div class="flex items-center justify-start">
-                    <a class="form-button mr-2" href="/posts/edit/<?= htmlspecialchars($post->getId()) ?>">Edit</a>
+                    <a class="form-button mr-2" href="/posts/<?= htmlspecialchars($post->getId()) ?>/edit">Edit</a>
                     <button onclick="deleteModal(<?= htmlspecialchars($post->getId()) ?>)" class="form-button">Delete</button>
                 </div>
             <?php endif ?>

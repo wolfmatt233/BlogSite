@@ -3,6 +3,7 @@
 namespace App\Models\Comment;
 
 use App\Models\Database;
+use Exception;
 
 class CommentManager
 {
@@ -37,30 +38,61 @@ class CommentManager
 
     public function getComments($post_id)
     {
-        $statement = $this->connection->prepare("SELECT comments.*, 
+        try {
+            $statement = $this->connection->prepare("SELECT comments.*, 
             users.name FROM comments
             INNER JOIN users 
             ON users.id=comments.user_id 
             WHERE post_id = ?"
-        );
+            );
 
-        if ($statement === false) {
-            return "sql-error";
-        }
+            $statement->bind_param("s", $post_id);
+            $statement->execute();
 
-        $statement->bind_param("s", $post_id);
-        $statement->execute();
+            $result = $statement->get_result();
 
-        if (!$statement->execute()) {
+            $comments = [];
+
+            while ($obj = $result->fetch_object()) {
+                $comment = new Comment(
+                    $obj->user_id,
+                    $obj->post_id,
+                    stripslashes($obj->content),
+                    $obj->likes,
+                    $obj->created,
+                    $obj->updated
+                );
+
+                $comment->setId($obj->id);
+                $comment->setName($obj->name);
+
+                $comments[] = $comment;
+            }
+
             $statement->close();
-            return "sql-error";
+
+            return $comments;
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "error-page", "message" => $e->getMessage()];
         }
+    }
 
-        $result = $statement->get_result();
+    public function getComment($id)
+    {
+        try {
+            $statement = $this->connection->prepare("SELECT * FROM comments WHERE id = ?");
 
-        $comments = [];
+            $statement->bind_param("s", $id);
+            $statement->execute();
+            $result = $statement->get_result();
 
-        while ($obj = $result->fetch_object()) {
+            if ($result->num_rows === 0) {
+                throw new Exception("No such record found.");
+            }
+
+            $obj = $result->fetch_object();
+
             $comment = new Comment(
                 $obj->user_id,
                 $obj->post_id,
@@ -73,51 +105,36 @@ class CommentManager
             $comment->setId($obj->id);
             $comment->setName($obj->name);
 
-            $comments[] = $comment;
-        }
-
-        $statement->close();
-
-        return $comments;
-    }
-
-    public function getComment($id)
-    {
-        $statement = $this->connection->prepare("SELECT * FROM comments WHERE id = ?");
-
-        if ($statement === false) {
-            return "sql-error";
-        }
-
-        $statement->bind_param("s", $id);
-        $statement->execute();
-
-        if (!$statement->execute()) {
             $statement->close();
-            return "sql-error";
-        }
 
-        $statement->close();
+            return $comment;
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "error-page", "message" => $e->getMessage()];
+        }
     }
 
     //CUD Methods
 
     public function create($post_id, $content)
     {
-        $statement = $this->connection->prepare("INSERT into posts VALUES (NULL, ?, ?, ?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
+        try {
+            $statement = $this->connection->prepare("INSERT into posts VALUES (NULL, ?, ?, ?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
 
-        if ($statement === false) {
-            return "sql-error";
-        }
+            if (empty($content)) {
+                return ["type" => "comment-create-error", "message" => "Enter some content"];
+            }
+            
+            //no post exists error
 
-        $statement->bind_param("sss", $_SESSION['user_id'], $post_id, $content);
-        $statement->execute();
+            $statement->bind_param("sss", $_SESSION['user_id'], $post_id, $content);
+            $statement->execute();
 
-        if (!$statement->execute()) {
             $statement->close();
-            return "sql-error";
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "error-page", "message" => $e->getMessage()];
         }
-        $statement->close();
     }
 
     public function update($id, $title)

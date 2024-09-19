@@ -35,33 +35,25 @@ class Controller
 
     protected function errorHandles($error)
     {
-        //error is true or exists as an array (even with no posts)
-        // if (is_array($error)) {
-        //     return false;
-        // }
+        if (!isset($error['type'])) {
+            return false;
+        }
 
-        // if ($error === true) {
-        //     return false;
-        // }
-
-        switch ($error) {
-            case "sql-error":
-                header('location: /error?e=db');
+        switch ($error['type']) {
+            case "error-page":
+                header('location: /error?e=' . $error['message']);
                 break;
-            case "page-error":
-                header('location: /error?e=404');
+            case "login-error":
+                header('location: /users/login?e=' . $error['message']);
                 break;
-            case "name-error-login":
-                header('location: /users/login?e=name');
+            case "signup-error":
+                header('location: /users/signup?e=' . $error['message']);
                 break;
-            case "password-error-login":
-                header('location: /users/login?e=password');
+            case "post-create-error":
+                header('location: /posts/create?e=' . $error['message']);
                 break;
-            case "name-error-signup":
-                header('location: /users/signup?e=name');
-                break;
-            case "password-error-signup":
-                header('location: /users/signup?e=password');
+            case "posts-update-error":
+                header('location: /posts/' . $error['id'] . '/edit?e=' . $error['message']);
                 break;
             default:
                 return false;

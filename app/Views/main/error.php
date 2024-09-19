@@ -1,13 +1,5 @@
-<p>
-    <?php
-    $error = $_GET['e'];
-    switch ($error) {
-        case "db":
-            echo "There was an error with the database, try again later.";
-            break;
-        case "404":
-            echo "Error 404: Page not found.";
-            break;
-    }
-    ?>
-</p>
+<a href="/home" class="underline">
+    <i class="fa-solid fa-arrow-left"></i>
+    Go Home
+</a>
+<p><?= $_GET['e']; ?></p>

@@ -11,6 +11,10 @@
             <input type="checkbox" name="private" id="private">
         </div>
 
+        <p class="text-center text-red-500 mt-2">
+            <?= isset($_GET['e']) ? $_GET['e'] : "" ?>
+        </p>
+
         <input type="submit" value="Upload Post" class="form-button">
     </div>
 </form>

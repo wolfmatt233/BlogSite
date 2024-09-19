@@ -43,7 +43,7 @@ function deleteModal(id) {
         <p>Are you sure you want to delete this post?</p>
         <div class="flex items-center justify-center">
           <button id="deleteCancel" onclick="closeModal(this, event)" class="form-button mr-2">Cancel</button>
-          <a href="/posts/delete/${id}" class="form-button hover:bg-red-400 hover:text-white">Delete</a>
+          <a href="/posts/${id}/delete" class="form-button hover:bg-red-400 hover:text-white">Delete</a>
         </div>
       </div>  
     `);

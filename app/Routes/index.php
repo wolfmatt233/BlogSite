@@ -28,8 +28,8 @@ $router->get('/posts/personal', PostController::class, 'personal');
 $router->get('/posts/{id}', PostController::class, 'view');
 $router->get('/posts/create', PostController::class, 'createForm');
 $router->post('/posts/upload', PostController::class, 'create');
-$router->get('/posts/edit/{id}', PostController::class, 'edit');
-$router->post('/posts/update/{id}', PostController::class, 'update');
-$router->get('/posts/delete/{id}', PostController::class, 'delete');
+$router->get('/posts/{id}/edit', PostController::class, 'edit');
+$router->post('/posts/{id}/update', PostController::class, 'update');
+$router->get('/posts/{id}/delete', PostController::class, 'delete');
 
 $router->dispatch();

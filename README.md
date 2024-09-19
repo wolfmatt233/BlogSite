@@ -13,24 +13,26 @@ This project is meant to help me sharpen my PHP skillset by building a website t
 - /public - the front end including css, images, and javascript
 - /src - Tailwind
 
-
 ## Feature Set
+
 - Users
-    - CRUD and login
-    - View user blog pages
-    - Admin access
+  - CRUD and login
+  - View user blog pages
+  - Admin access
 - Blog and Comment
-    - CRUD
-    - Adding or removing likes
-    - Marking blogs as private
+  - CRUD
+  - Adding or removing likes
+  - Marking blogs as private
 
 ## To Do
+
 - User page
-    - Password change
-    - Account deletion
-    - Name change
+  - Password change
+  - Account deletion
+  - Name change
+  - Page access middleware
 - Blogs
-    - Admin access
+  - Admin access
 - Comments
-    - CUD
-    - Visuals
+  - CUD
+  - Visuals
