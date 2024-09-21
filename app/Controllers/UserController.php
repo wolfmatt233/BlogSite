@@ -16,11 +16,15 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = $this->user->getUsers();
-        $error = $this->errorHandles($users);
+        if ($this->checkAdmin() === false) {
+            header("location: /home");
+        } else {
+            $users = $this->user->getUsers();
+            $error = $this->errorHandles($users);
 
-        if ($error === false) {
-            $this->render('users', 'index', ['users' => $users, 'title' => 'Users']);
+            if ($error === false) {
+                $this->render('users', 'index', ['users' => $users, 'title' => 'Users']);
+            }
         }
     }
 

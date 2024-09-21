@@ -1,8 +1,9 @@
-<div class="p-2 border-t border-gray-200 mb-5">
-    <p class="text-2xl">
+<div class="p-2 border-t border-gray-200 mb-5 flex flex-col">
+    <a class="text-2xl">
         <?= htmlspecialchars($post->getTitle()) ?>
-        </a>
-    <p>By <?= htmlspecialchars($post->getName()) ?></p>
+    </a>
+    <a href="/posts/users/<?= htmlspecialchars($post->getUserId()) ?>" class="hover:underline">By
+        <?= htmlspecialchars($post->getName()) ?></a>
     <p>
         <?=
             htmlspecialchars(
@@ -32,13 +33,14 @@
 </div>
 
 <div class="p-2 border-t border-gray-200 mb-5">
-    <p class="text-xl text-center">Comments</p>
+    <p class="text-xl text-center mb-2">Comments</p>
     <?php if (count($comments) > 0): ?>
         <!-- Comments -->
         <?php foreach ($comments as $comment): ?>
             <div class="border border-gray-200 rounded-md p-2">
+                <a href="/users/<?= htmlspecialchars($comment->getUserId()) ?>"
+                    class="hover:underline"><?= htmlspecialchars($comment->getName()) ?></a>
                 <p><?= htmlspecialchars($comment->getContent()) ?></p>
-                <p>- <?= htmlspecialchars($comment->getName()) ?></p>
             </div>
         <?php endforeach ?>
 

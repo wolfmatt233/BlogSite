@@ -54,6 +54,6 @@ class Router
             }
         }
 
-        throw new \Exception("No route found for URI: $uri");
+        throw new \Exception(header("location: /error?e=Page not found"));
     }
 }

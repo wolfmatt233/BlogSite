@@ -24,7 +24,7 @@ $router->get('/users', UserController::class, 'index');
 
 //Posts: Users only
 $router->get('/posts', PostController::class, 'index');
-$router->get('/posts/personal', PostController::class, 'personal');
+$router->get('/posts/users/{id}', PostController::class, 'user');
 $router->get('/posts/{id}', PostController::class, 'view');
 $router->get('/posts/create', PostController::class, 'createForm');
 $router->post('/posts/upload', PostController::class, 'create');

@@ -1,10 +1,12 @@
 <?php if (!empty($posts)): ?>
     <?php foreach ($posts as $post): ?>
-        <div class="p-2 border-t border-gray-200 mb-5">
+        <div class="p-2 border-t border-gray-200 mb-5 flex flex-col">
             <a href="/posts/<?= htmlspecialchars($post->getId()) ?>" class="text-2xl hover:underline">
                 <?= htmlspecialchars($post->getTitle()) ?>
             </a>
-            <p>By <?= htmlspecialchars($post->getName()) ?></p>
+            <a href="/posts/users/<?= htmlspecialchars($post->getUserId()) ?>" class="hover:underline">
+                By <?= htmlspecialchars($post->getName()) ?>
+            </a>
             <p>
                 <?=
                     htmlspecialchars(

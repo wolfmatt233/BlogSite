@@ -23,7 +23,7 @@
         <?php
         if (isset($_SESSION['loggedin'])): ?>
             <a href='/posts?page=1' class='nav-link'>Browse Posts</a>
-            <a href="/posts/personal" class="nav-link">Your Posts</a>
+            <a href="/posts/users/<?= $_SESSION['user_id'] ?>" class="nav-link">Your Posts</a>
             <a href="/posts/create" class="nav-link">Create a Post</a>
             <a href='/users/logout' class="nav-link">Log Out</a>
         <?php else: ?>

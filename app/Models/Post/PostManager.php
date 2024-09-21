@@ -78,16 +78,26 @@ class PostManager
         }
     }
 
-    public function getPersonalPosts()
+    public function getUserPosts(int $id)
     {
         try {
-            $statement = $this->connection->prepare("SELECT posts.*, users.name FROM posts
+            $statement = NULL;
+
+            if ($_SESSION['user_id'] === $id) {
+                $statement = $this->connection->prepare("SELECT posts.*, users.name FROM posts
                 INNER JOIN users 
                 ON users.id=posts.user_id 
                 WHERE user_id=?"
-            );
+                );
+            } else {
+                $statement = $this->connection->prepare("SELECT posts.*, users.name FROM posts
+                INNER JOIN users 
+                ON users.id=posts.user_id 
+                WHERE user_id=? AND private=FALSE"
+                );
+            }
 
-            $statement->bind_param("s", $_SESSION['user_id']);
+            $statement->bind_param("s", $id);
             $statement->execute();
             $result = $statement->get_result();
 
@@ -117,17 +127,17 @@ class PostManager
         }
     }
 
-    public function getPost($id)
+    public function getPost(int $id)
     {
         try {
             $statement = $this->connection->prepare("SELECT posts.*, users.name 
                 FROM posts
                 INNER JOIN users 
                 ON posts.user_id=users.id 
-                WHERE posts.id = ? AND user_id = ?"
+                WHERE posts.id = ?"
             );
 
-            $statement->bind_param("ss", $id, $_SESSION['user_id']);
+            $statement->bind_param("s", $id);
             $statement->execute();
 
             $result = $statement->get_result();
@@ -160,16 +170,20 @@ class PostManager
         }
     }
 
-    public function getComments($id)
+    public function getComments(int $id)
     {
         return CommentManager::getInstance()->getComments($id);
     }
 
     //CUD Methods
 
-    public function create($title, $content, $private)
+    public function create()
     {
         try {
+            $title = trim($_POST['title']);
+            $content = trim($_POST['content']);
+            $private = isset($_POST['private']);
+
             $statement = $this->connection->prepare("INSERT into posts VALUES (NULL, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
 
             if (empty($title)) {
@@ -189,9 +203,13 @@ class PostManager
         }
     }
 
-    public function update($id, $title, $content, $private)
+    public function update(int $id)
     {
         try {
+            $title = trim($_POST['title']);
+            $content = trim($_POST['content']);
+            $private = isset($_POST['private']);
+
             $statement = $this->connection->prepare("UPDATE posts 
                 SET `title` = ?, `content` = ?, `private` = ?, `updated` = CURRENT_TIMESTAMP 
                 WHERE posts.id = ? 
@@ -223,7 +241,7 @@ class PostManager
         }
     }
 
-    public function delete($id)
+    public function delete(int $id)
     {
         try {
             $statement = $this->connection->prepare("DELETE From posts WHERE posts.id = ? AND posts.user_id = ?");

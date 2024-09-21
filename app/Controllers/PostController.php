@@ -12,7 +12,12 @@ class PostController extends Controller
     public function __construct()
     {
         session_status() === PHP_SESSION_NONE ? session_start() : "";
-        $this->post = PostManager::getInstance();
+
+        if ($this->checkLogged() === false) {
+            header("location: /users/login");
+        } else {
+            $this->post = PostManager::getInstance();
+        }
     }
 
     public function index()
@@ -32,17 +37,22 @@ class PostController extends Controller
         }
     }
 
-    public function personal()
+    public function user($id)
     {
-        $posts = $this->post->getPersonalPosts();
+        $posts = $this->post->getUserPosts($id);
         $error = $this->errorHandles($posts);
 
         if ($error === false) {
             $totalPages = ceil(count($posts) / 10);
             $posts = $this->paginate($posts);
+            $name = "";
+
+            foreach ($posts as $post) {
+                $name = $post->getName();
+            }
 
             $this->render('posts', 'index', [
-                'title' => 'Your Posts',
+                'title' => 'Posts by ' . $name,
                 'posts' => $posts,
                 'pages' => $totalPages
             ]);
@@ -53,8 +63,6 @@ class PostController extends Controller
     {
         $post = $this->post->getPost($id);
         $comments = $this->post->getComments($id);
-
-        var_dump($post);
 
         $error = $this->errorHandles($post);
         $error = $this->errorHandles($comments);
@@ -79,12 +87,7 @@ class PostController extends Controller
 
     public function create()
     {
-        $post = $this->post->create(
-            trim($_POST['title']),
-            trim($_POST['content']),
-            isset($_POST['private'])
-        );
-
+        $post = $this->post->create();
         $error = $this->errorHandles($post);
 
         if ($error === false) {
@@ -95,6 +98,13 @@ class PostController extends Controller
     public function edit($id)
     {
         $post = $this->post->getPost($id);
+        $user_id = $post->getUserId();
+
+        // disallow different user from editing a post that isn't their own
+        if ($user_id != $_SESSION['user_id']) {
+            header("location: /home");
+        }
+
         $error = $this->errorHandles($post);
 
         if ($error === false) {
@@ -104,13 +114,7 @@ class PostController extends Controller
 
     public function update($id)
     {
-        $post = $this->post->update(
-            $id,
-            trim($_POST['title']),
-            trim($_POST['content']),
-            isset($_POST['private'])
-        );
-
+        $post = $this->post->update($id);
         $error = $this->errorHandles($post);
 
         if ($error === false) {

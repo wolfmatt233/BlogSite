@@ -124,8 +124,6 @@ class CommentManager
             if (empty($content)) {
                 return ["type" => "comment-create-error", "message" => "Enter some content"];
             }
-            
-            //no post exists error
 
             $statement->bind_param("sss", $_SESSION['user_id'], $post_id, $content);
             $statement->execute();
@@ -139,40 +137,32 @@ class CommentManager
 
     public function update($id, $title)
     {
-        $statement = $this->connection->prepare("UPDATE comments SET `content` = ?, `updated` = CURRENT_TIMESTAMP WHERE comments.id = ? AND posts.user_id = ?");
+        try {
+            $statement = $this->connection->prepare("UPDATE comments SET `content` = ?, `updated` = CURRENT_TIMESTAMP WHERE comments.id = ? AND posts.user_id = ?");
 
-        if ($statement === false) {
-            return "sql-error";
-        }
+            $statement->bind_param("sss", $title, $id, $_SESSION['user_id']);
+            $statement->execute();
 
-        $statement->bind_param("sss", $title, $id, $_SESSION['user_id']);
-        $statement->execute();
-
-        if (!$statement->execute()) {
             $statement->close();
-            return "sql-error";
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "error-page", "message" => $e->getMessage()];
         }
-
-        $statement->close();
 
     }
 
     public function delete($id)
     {
-        $statement = $this->connection->prepare("DELETE FROM comments WHERE comments.id = ? AND comments.user_id = ?");
+        try {
+            $statement = $this->connection->prepare("DELETE FROM comments WHERE comments.id = ? AND comments.user_id = ?");
 
-        if ($statement === false) {
-            return "sql-error";
-        }
+            $statement->bind_param("ss", $id, $_SESSION['user_id']);
+            $statement->execute();
 
-        $statement->bind_param("ss", $id, $_SESSION['user_id']);
-        $statement->execute();
-
-        if (!$statement->execute()) {
             $statement->close();
-            return "sql-error";
+        } catch (Exception $e) {
+            $statement->close();
+            return ["type" => "error-page", "message" => $e->getMessage()];
         }
-
-        $statement->close();
     }
 }

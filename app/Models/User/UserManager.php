@@ -113,6 +113,8 @@ class UserManager
 
         try {
             $hashPassword = password_hash($password, PASSWORD_DEFAULT);
+            $name = ucfirst($name);
+            
             $statement = $this->connection->prepare(
                 "INSERT INTO users VALUES (NULL, ?, ?, 0)"
             );

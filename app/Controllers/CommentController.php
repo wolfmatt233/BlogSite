@@ -11,7 +11,13 @@ class CommentController extends Controller
 
     public function __construct()
     {
-        $this->post = CommentManager::getInstance();
+        $loggedIn = $this->checkLogged();
+
+        if ($loggedIn === true) {
+            $this->comment = CommentManager::getInstance();
+        } else {
+            header("location: /users/login");
+        }
     }
 
     public function getComments($id)
